@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello world</title>
+</head>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    let user;
+
+    function setUsername() {
+        if (!document.getElementById('name').value) return alert("Please enter you name")
+        socket.emit('setUsername', document.getElementById('name').value);
+    };
+
+    function sendMessage() {
+        const msg = document.getElementById('message').value;
+        if (msg) {
+            socket.emit('msg', { message: msg, user: user });
+            document.getElementById('message').value = "";
+        }
+    }
+
+    socket.on('userExists', function (data) {
+        document.getElementById('error-container').innerHTML = data;
+    });
+
+    socket.on('userSet', function (data) {
+        user = data.username;
+        document.body.innerHTML = `
+        <div><span>User Name: ${user}</span></div>
+        <br/>
+            <input type = "text" id = "message">
+         <button type = "button" name = "button" onclick = "sendMessage()">Send</button>
+         <div id = "message-container"></div>`;
+    });
+
+
+    socket.on('newmsg', function (data) {
+        if (user) {
+            document.getElementById('message-container').innerHTML += '<div><b>' +
+                data.user + '</b>: ' + data.message + '</div>'
+        }
+    })
+    socket.on('userJoined', function (data) {
+        if (user) {
+            document.getElementById('message-container').innerHTML += '<div><b>' +
+                data.username + ' joined </b></div>'
+        }
+    })
+
+    socket.on('userLefted', function (data) {
+        if (user) {
+            document.getElementById('message-container').innerHTML += '<div><b>' +
+                data.username + ' left </b></div>'
+        }
+    })
+
+
+</script>
+
+<body>
+    <div id="error-container"></div>
+    <input id="name" type="text" name="name" value="" placeholder="Enter your name!">
+    <button type="button" name="button" onclick="setUsername()">
+        Join
+    </button>
+</body>
+
+</html>

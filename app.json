@@ -1,0 +1,8 @@
+{
+    "apps": [
+        {
+            "name": "socket.io-poc",
+            "script": "index.js"
+        }
+    ]
+}
