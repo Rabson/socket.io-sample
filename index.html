@@ -12,7 +12,7 @@
 
     function setUsername() {
         if (!document.getElementById('name').value) return alert("Please enter you name")
-        socket.emit('setUsername', document.getElementById('name').value);
+        socket.emit('setUsername', { username: document.getElementById('name').value });
     };
 
     function sendMessage() {
@@ -38,10 +38,10 @@
     });
 
 
-    socket.on('newmsg', function (data) {
-        if (user) {
+    socket.on('newMsg', function (data) {
+        if (user && data) {
             document.getElementById('message-container').innerHTML += '<div><b>' +
-                data.user + '</b>: ' + data.message + '</div>'
+                data.name + '</b>: ' + data.message + ` (${new Date(data.timestamp)})` + '</div>'
         }
     })
     socket.on('userJoined', function (data) {
@@ -51,7 +51,7 @@
         }
     })
 
-    socket.on('userLefted', function (data) {
+    socket.on('userLeft', function (data) {
         if (user) {
             document.getElementById('message-container').innerHTML += '<div><b>' +
                 data.username + ' left </b></div>'
